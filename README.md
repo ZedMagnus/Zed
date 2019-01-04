@@ -5,3 +5,4 @@
 2- open terminalle in this folder
 3- run this command:
    1- chmod u+x stup
+   2 ./stup
