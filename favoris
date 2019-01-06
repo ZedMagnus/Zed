@@ -1,7 +1,9 @@
 #!/bin/bash
+
 myFunction(){
+
   for i in $(cut -d' ' -f1 $HOME/.favoris_bash); do
-    if [[ $i = $2  ]]; then
+    if [[ $i = $a  ]]; then
       let "count++";
       if [[ $option = "C" ]]; then
         break;
@@ -13,7 +15,7 @@ myFunction(){
   done
   if [[ $count -eq 0 ]]; then
     if [[ $option = "S" ]]; then
-      echo  $2 '->' $PWD >> $HOME/.favoris_bash
+      echo  $a '->' $PWD >> $HOME/.favoris_bash
     fi
     if [[ $option = "C" ]]; then
       echo "favoris dont exist"
@@ -42,60 +44,72 @@ Myhelp(){
         ::::         ::    ::    ::::::      ::::::::    ::          C : go to favoris                          ::::
         ::::                                                         R : remove favoris                         ::::
         ::::                                                         -h: show help for this command             ::::
-        ::::                                                         -u: unstall this command                   ::::
+        ::::                                                                                                    ::::
         ::::                                                                                                    ::::
         ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         \n"
 }
 
+
+
 touch $HOME/.favoris_bash
 
+S(){
+myFunction $count $a $option
+}
 
+C(){
+  myFunction $count $a $option $nbr_itration
+}
+
+L(){
+  echo "favoris List :"
+  echo "-------------------------------"
+  cut -d' ' -f1 $HOME/.favoris_bash
+  echo "-------------------------------"
+}
+
+R(){
+  touch $HOME/.favoris_bash1
+  for i in $(cut -d' ' -f1 $HOME/.favoris_bash); do
+    line=`head -$nbr_itration $HOME/.favoris_bash | tail -1`
+    if [[ $i != $a  ]]; then
+      echo $line >> $HOME/.favoris_bash1
+    else
+      let count++
+    fi
+    let nbr_itration++
+  done
+  if [[ $count -eq 0 ]]; then
+    echo "favorsi don't exist"
+    rm $HOME/.favoris_bash1
+  else
+    rm $HOME/.favoris_bash
+    mv $HOME/.favoris_bash1 $HOME/.favoris_bash
+  fi
+}
+
+count=0
+option=$1
+a=$2
+nbr_itration=1;
 
 case $1 in
-
     "S" )
-          count=0
-          option="S"
-          myFunction $count $2 $option
+          S $count $option $a
     ;;
-
     "C")
-        count=0
-        nbr_itration=1;
-        option="C"
-        myFunction $count $2 $option $nbr_itration
+        C $count $a $option $nbr_itration
     ;;
     "L")
-      echo "favoris List :"
-      echo "-------------------------------"
-      cut -d' ' -f1 $HOME/.favoris_bash
-      echo "-------------------------------"
+      L
     ;;
     "R")
-    nbr_itration=1
-    count=0
-    touch $HOME/.favoris_bash1
-    for i in $(cut -d' ' -f1 $HOME/.favoris_bash); do
-      line=`head -$nbr_itration $HOME/.favoris_bash | tail -1`
-      if [[ $i != $2  ]]; then
-        echo $line >> $HOME/.favoris_bash1
-      else
-        let count++
-      fi
-      let nbr_itration++
-    done
-    if [[ $count -eq 0 ]]; then
-      echo "favorsi don't exist"
-      rm $HOME/.favoris_bash1
-    else
-      rm $HOME/.favoris_bash
-      mv $HOME/.favoris_bash1 $HOME/.favoris_bash
-    fi
+    R $a $count $nbr_itration
+    cd
     ;;
     "-h")
      Myhelp
     ;;
-
 esac
